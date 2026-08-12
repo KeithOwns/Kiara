@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial import of ChatGPT chat summaries related to Kiara's adoption, health, feeding, and care.
 - Synthesized HTML project summary aggregating Kiara's identity, breed guesses, veterinary advice, safety guidelines, and activities.
+- Added `kiara_feature_webpage.html` to the project.
