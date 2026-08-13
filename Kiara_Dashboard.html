@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Keith Owen | Kiara Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0B1120;
+      --bg-gradient: radial-gradient(circle at top left, #1a2942 0%, #0B1120 100%);
+      --card-bg: rgba(30, 41, 59, 0.6);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #14b8a6;
+      --accent-hover: #0d9488;
+      --danger: #f43f5e;
+      --warn: #f59e0b;
+    }
+
+    * { box-sizing: border-box; }
+    
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 260px;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--card-border);
+      padding: 30px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .brand span { color: var(--accent); }
+
+    .nav-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      text-align: left;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--text);
+    }
+
+    .nav-btn.active {
+      background: var(--accent);
+      color: #042f2e;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 40px;
+      overflow-y: auto;
+    }
+
+    .header {
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .header p {
+      color: var(--muted);
+      font-size: 1.1rem;
+      margin-top: 8px;
+    }
+
+    /* Tabs */
+    .tab-content { display: none; animation: fadeIn 0.4s ease forwards; }
+    .tab-content.active { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Grid & Cards */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .grid-wide {
+      grid-column: 1 / -1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255,255,255,0.15);
+    }
+
+    .card h2 {
+      margin: 0 0 16px 0;
+      font-size: 1.3rem;
+      color: var(--text);
+    }
+
+    /* Progress & Metrics */
+    .metric {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .metric-val {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #0ea5e9, var(--accent));
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    /* Checklists */
+    .check-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .check-item:last-child { border-bottom: none; padding-bottom: 0; }
+
+    .check-item input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      margin-top: 2px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+
+    .check-item label {
+      font-size: 1.05rem;
+      line-height: 1.4;
+      cursor: pointer;
+    }
+
+    .check-item.done label {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    /* Inputs */
+    textarea, input[type="text"] {
+      width: 100%;
+      background: rgba(0,0,0,0.2);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 12px;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      margin-bottom: 12px;
+    }
+
+    textarea:focus, input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    button.primary {
+      background: var(--accent);
+      color: #042f2e;
+      border: none;
+      padding: 10px 20px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.2s ease;
+    }
+
+    button.primary:hover { background: var(--accent-hover); }
+
+    /* Tags */
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.1);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin: 4px 4px 4px 0;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">Keith<span>Owen</span></div>
+    <button class="nav-btn active" onclick="switchTab('dash')">Overview</button>
+    <button class="nav-btn" onclick="switchTab('priorities')">Action Items</button>
+    <button class="nav-btn" onclick="switchTab('specs')">Health & Diet</button>
+    <button class="nav-btn" onclick="switchTab('stunts')">Records</button>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    
+    <!-- Dashboard Tab -->
+    <div id="dash" class="tab-content active">
+      <div class="header">
+        <h1>Kiara's Dashboard</h1>
+        <p>Daily care, walks, and milestone tracking.</p>
+      </div>
+      
+      <div class="grid">
+        <div class="card">
+          <h2>Weekly Walks Target</h2>
+          <div class="metric">
+            <span class="muted">Walks logged this week</span>
+            <span class="metric-val" id="appCount">0</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="appProgress"></div></div>
+          <div style="margin-top:20px; display:flex; gap:10px;">
+            <button class="primary" onclick="updateAppCount(1)">+ Log Walk</button>
+            <button class="primary" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="resetAppCount()">Reset</button>
+          </div>
+          <p class="muted" style="font-size:0.9rem; margin-top:10px;">Goal: 14 walks per week (2x daily).</p>
+        </div>
+
+        <div class="card">
+          <h2>Daily Compliance</h2>
+          <div class="check-item">
+            <input type="checkbox" id="jobCheck1" onchange="saveState()">
+            <label for="jobCheck1">Morning Feed & Meds (if any)</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="jobCheck2" onchange="saveState()">
+            <label for="jobCheck2">Evening Feed</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="jobCheck3" onchange="saveState()">
+            <label for="jobCheck3">Active Playtime (20m+)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Priorities Tab -->
+    <div id="priorities" class="tab-content">
+      <div class="header">
+        <h1>Highest-Value Action Items</h1>
+        <p>Upcoming appointments and tasks for Kiara.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card grid-wide">
+          <h2>Maintenance & Appointments</h2>
+          <div class="check-item">
+            <input type="checkbox" id="p1" onchange="saveState()">
+            <label for="p1">Schedule Annual Vet Checkup</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="p2" onchange="saveState()">
+            <label for="p2">Monthly Heartworm/Flea Preventative</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="p3" onchange="saveState()">
+            <label for="p3">Grooming & Nail Trim</label>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Media & Memories</h2>
+          <div class="check-item">
+            <input type="checkbox" id="t1" onchange="saveState()">
+            <label for="t1">Update kiara_feature_webpage.html</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="t2" onchange="saveState()">
+            <label for="t2">Sort & Backup new photos</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Target Roles Tab -->
+    <div id="specs" class="tab-content">
+      <div class="header">
+        <h1>Health Specs & Diet</h1>
+        <p>Quick reference for feeding and vitals.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Diet Plan</h2>
+          <div>
+            <span class="tag">Kibble</span>
+            <span class="tag">Wet Food Mix-in</span>
+            <span class="tag">Joint Supplements</span>
+          </div>
+          <h3 style="margin-top: 20px; font-size: 1rem; color:var(--muted);">@Feeding Guidelines</h3>
+          <ul style="margin: 5px 0 0 0; padding-left: 20px; font-size: 0.95rem; line-height: 1.5;">
+            <li>1 Cup morning, 1 Cup evening.</li>
+            <li>Monitor treats to avoid weight gain.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Network Tab -->
+    <div id="stunts" class="tab-content">
+      <div class="header">
+        <h1>Records & Logs</h1>
+        <p>Log vet visits, weight checks, and behaviors.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Vet Scratchpad</h2>
+          <p class="muted" style="font-size:0.9rem; margin-top:0;">Log weight, notes, or behavioral changes here...</p>
+          <textarea id="netNotes" rows="6" placeholder="Vet visit 08/11/2026: Weight 45lbs, healthy..." oninput="saveState()"></textarea>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // Tab Switching
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+    }
+
+    // State Management via Local Storage (No server needed for standalone files)
+    const STORAGE_KEY = 'KiaraDashboardState';
+    
+    function saveState() {
+      const state = {
+        appCount: document.getElementById('appCount').innerText,
+        checks: {
+          jobCheck1: document.getElementById('jobCheck1').checked,
+          jobCheck2: document.getElementById('jobCheck2').checked,
+          jobCheck3: document.getElementById('jobCheck3').checked,
+          p1: document.getElementById('p1').checked,
+          p2: document.getElementById('p2').checked,
+          p3: document.getElementById('p3').checked,
+          t1: document.getElementById('t1').checked,
+          t2: document.getElementById('t2').checked,
+        },
+        netNotes: document.getElementById('netNotes').value
+      };
+      
+      updateStyles();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      try {
+        const storedState = localStorage.getItem(STORAGE_KEY);
+        if (!storedState) return;
+        const state = JSON.parse(storedState);
+        
+        if (state) {
+          if (state.appCount) {
+            document.getElementById('appCount').innerText = state.appCount;
+            updateProgress();
+          }
+          if (state.checks) {
+            for (let [id, val] of Object.entries(state.checks)) {
+              const el = document.getElementById(id);
+              if (el) el.checked = val;
+            }
+          }
+          if (state.netNotes) {
+            document.getElementById('netNotes').value = state.netNotes;
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load state.", e);
+      }
+      updateStyles();
+    }
+
+    function updateStyles() {
+      document.querySelectorAll('.check-item').forEach(item => {
+        const box = item.querySelector('input[type="checkbox"]');
+        if (box && box.checked) {
+          item.classList.add('done');
+        } else {
+          item.classList.remove('done');
+        }
+      });
+    }
+
+    // Submissions Tracker
+    function updateAppCount(val) {
+      const el = document.getElementById('appCount');
+      let current = parseInt(el.innerText) || 0;
+      current += val;
+      el.innerText = current;
+      updateProgress();
+      saveState();
+    }
+
+    function resetAppCount() {
+      document.getElementById('appCount').innerText = '0';
+      
+      // Also uncheck daily compliance
+      document.getElementById('jobCheck1').checked = false;
+      document.getElementById('jobCheck2').checked = false;
+      document.getElementById('jobCheck3').checked = false;
+
+      updateProgress();
+      saveState();
+    }
+
+    function updateProgress() {
+      const current = parseInt(document.getElementById('appCount').innerText) || 0;
+      const target = 14;
+      let pct = (current / target) * 100;
+      if (pct > 100) pct = 100;
+      document.getElementById('appProgress').style.width = pct + '%';
+    }
+
+    // Init
+    window.onload = loadState;
+
+  </script>
+</body>
+</html>
